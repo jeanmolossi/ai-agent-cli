@@ -19,9 +19,13 @@ var queryCmd = &cobra.Command{
 			return err
 		}
 
+		//nolint:errcheck
 		defer store.Close()
 
-		store.Load()
+		err = store.Load()
+		if err != nil {
+			return err
+		}
 
 		results, err := store.Search(strings.Join(args, " "), 100)
 		if err != nil {
