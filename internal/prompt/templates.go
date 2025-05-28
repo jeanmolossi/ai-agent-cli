@@ -11,12 +11,11 @@ import (
 )
 
 func LoadTemplates(tplPath string) ([]string, error) {
-	slog.Debug("loading templates...")
-
 	if tplPath == "" {
-		slog.Debug("loading templates from default path...")
 		tplPath = filepath.Join(".", ".ai-agent-cli", "templates")
 	}
+
+	slog.Debug("loading templates...", slog.String("path", tplPath))
 
 	info, err := os.Stat(tplPath)
 	if err != nil || !info.IsDir() {

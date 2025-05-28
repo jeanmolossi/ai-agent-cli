@@ -1,6 +1,9 @@
 package agent
 
-import "strings"
+import (
+	"log/slog"
+	"strings"
+)
 
 func (a *Agent) LoadTemplates(userPrompt string) string {
 	var fullPrompt strings.Builder
@@ -10,6 +13,8 @@ func (a *Agent) LoadTemplates(userPrompt string) string {
 	}
 	fullPrompt.WriteString("Usuario: ")
 	fullPrompt.WriteString(userPrompt)
+
+	slog.Debug("final prompt", slog.String("prompt", fullPrompt.String()))
 
 	return fullPrompt.String()
 }

@@ -3,6 +3,7 @@ package agent
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/spf13/viper"
 	"github.com/tmc/langchaingo/embeddings"
@@ -31,6 +32,8 @@ func NewEmbeddingProvider() (EmbedProvider, error) {
 	if !ok {
 		return nil, fmt.Errorf("the client is not supported as embedding provider")
 	}
+
+	slog.Debug("starting embedding provider", slog.String("provider", ragProvider))
 
 	embedder, err := embeddings.NewEmbedder(client)
 	if err != nil {
