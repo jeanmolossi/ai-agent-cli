@@ -5,7 +5,7 @@ CLI em Go para orquestrar agentes de IA no desenvolvimento de software.
 ## Setup mínimo
 
 ```bash
-git clone git@github.com:seu-usuario/ai-agent-cli.git
+git clone git@github.com:jeanmolossi/ai-agent-cli.git
 
 cd ai-agent-cli
 
