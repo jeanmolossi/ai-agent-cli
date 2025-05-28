@@ -15,6 +15,11 @@ func LoadTemplates(tplPath string) ([]string, error) {
 		tplPath = filepath.Join(".", ".ai-agent-cli", "templates")
 	}
 
+	tplPath = strings.TrimPrefix(tplPath, "./")
+	if !strings.HasPrefix(tplPath, ".ai-agent-cli") {
+		tplPath = filepath.Join(".", ".ai-agent-cli", tplPath)
+	}
+
 	slog.Debug("loading templates...", slog.String("path", tplPath))
 
 	info, err := os.Stat(tplPath)
