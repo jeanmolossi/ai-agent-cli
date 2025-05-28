@@ -1,0 +1,36 @@
+package agent
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/tmc/langchaingo/embeddings"
+)
+
+type EmbedProvider interface {
+	Embed(ctx context.Context, content string) ([][]float32, error)
+}
+
+type embedProvider struct {
+	embedder embeddings.Embedder
+}
+
+func NewEmbeddingProvider() (EmbedProvider, error) {
+	provider, _ := NewLLMProvider()
+	client, ok := provider.Model().(embeddings.EmbedderClient)
+	if !ok {
+		return nil, fmt.Errorf("the client is not supported as embedding provider")
+	}
+
+	embedder, err := embeddings.NewEmbedder(client)
+	if err != nil {
+		return nil, err
+	}
+
+	return &embedProvider{embedder: embedder}, nil
+}
+
+// Embed implements EmbedProvider.
+func (e *embedProvider) Embed(ctx context.Context, content string) ([][]float32, error) {
+	return e.embedder.EmbedDocuments(ctx, []string{content})
+}

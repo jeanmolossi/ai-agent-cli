@@ -1,0 +1,16 @@
+# binários
+/bin/
+/*.exe
+
+# módulos e cache
+/vendor/
+/go.sum
+
+# banco de dados local
+/*.db
+
+# IDEs / sistemas
+*.log
+.idea/
+.vscode/
+

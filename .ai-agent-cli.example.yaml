@@ -1,0 +1,59 @@
+# .ai-agent-cli.yaml — Exemplo de configuração para ai-agent-cli
+
+llm:
+  # Provedor de LLM principal: "openai", "anthropic" ou "ollama"
+  provider: "ollama"
+
+  openai:
+    # API Key para OpenAI (usado quando provider == "openai")
+    api_key: "sk-XXXXXXXXXXXXXXXXXXXXXXXX"
+
+  anthropic:
+    # API Key para Anthropic (usado quando provider == "anthropic")
+    api_key: "anthropic-XXXXXXXXXXXXXXXXXXXXXXXX"
+
+  ollama:
+    # Host da instância local do Ollama (usado quando provider == "ollama")
+    host: "http://localhost"
+    # Porta padrão do Ollama
+    port: 11434
+    # Modelo que o Ollama irá utilizar (padrão = "gemma")
+    model: gemma
+    # Temperatura de criatividade do modelo
+    temperature: 0
+
+rag:
+  # Provedor de Vector Store: "local", "qdrant" ou "pgvector"
+  provider: "local"
+
+  # Provedor de embeddings (cai em llm.provider se vazio)
+  embed_provider: "ollama"
+
+  # Lista de pastas a ignorar ao escanear o repositório
+  ignore:
+    - ".git"
+    - ".docker"
+    - ".idea"
+    - ".vscode"
+    - "node_modules"
+    - "vendor"
+
+  # Configurações específicas do provedor "local"
+  local:
+    # Tamanho (em caracteres ou tokens) de cada chunk de documento
+    chunk_size: 512
+
+  # Diretórios adicionais de documentação para indexar no RAG
+  docs_paths:
+    - "docs"
+    - "../outro-manual"
+
+prompt:
+  # Caminho para a pasta de templates de prompt (.tpl)
+  # Cada arquivo .tpl será pré-pendido, em ordem alfabética
+  # O caminho é relativo em .ai-agent-cli/
+  templates_path: "./templates"
+
+log:
+  level: info
+  format: json
