@@ -125,8 +125,10 @@ func (m Model) genericTpl() map[string]any {
 
 func (m Model) ragTpl() map[string]any {
 	return map[string]any{
-		"provider":       m.ragChoice,
-		"embed_provider": m.llmChoice,
+		"provider": m.ragChoice,
+		"embed": map[string]any{
+			"provider": m.llmChoice,
+		},
 		"ignore": []string{
 			".git",
 			".vscode",

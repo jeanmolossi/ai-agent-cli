@@ -18,6 +18,8 @@ var defaultIgnores = []string{
 	".idea",
 	"node_modules",
 	"vendor",
+	".ai-agent-cli.example.yaml",
+	".ai-agent-cli.yaml",
 }
 
 func ScanAndIndex(roots ...string) error {
@@ -36,8 +38,15 @@ func ScanAndIndex(roots ...string) error {
 		return err
 	}
 
-	store.Drop()
-	store.Load()
+	err = store.Drop()
+	if err != nil {
+		return err
+	}
+
+	err = store.Load()
+	if err != nil {
+		return err
+	}
 
 	for _, root := range roots {
 		if err := filepath.Walk(root, func(path string, info fs.FileInfo, err error) error {
@@ -59,10 +68,18 @@ func ScanAndIndex(roots ...string) error {
 				return nil
 			}
 
+			for _, ig := range ignores {
+				if info.Name() == ig {
+					slog.Debug("skipping file", slog.String("filename", info.Name()))
+					return nil
+				}
+			}
+
 			data, _ := os.ReadFile(path)
 			chunks := chunkText(string(data), viper.GetInt("rag.local.chunk_size"))
 			for i, c := range chunks {
 				id := fmt.Sprintf("%s#%d", path, i)
+				//nolint:errcheck
 				store.Add(id, c)
 			}
 

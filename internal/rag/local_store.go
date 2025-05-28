@@ -23,7 +23,10 @@ type localStore struct {
 var dataDir = filepath.Join(".", ".ai-agent-cli")
 
 func newLocalStore() (VectorStore, error) {
-	os.MkdirAll(dataDir, 0o755)
+	err := os.MkdirAll(dataDir, 0o755)
+	if err != nil {
+		return nil, err
+	}
 
 	db, err := sql.Open("sqlite3", filepath.Join(dataDir, "rag.db"))
 	if err != nil {
@@ -74,6 +77,7 @@ func (l *localStore) Search(query string, topK int) ([]SearchResult, error) {
 		return nil, err
 	}
 
+	//nolint:errcheck
 	defer rows.Close()
 
 	var results []SearchResult
@@ -133,8 +137,4 @@ func (l *localStore) Persist() error {
 
 func (l *localStore) Close() error {
 	return l.db.Close()
-}
-
-func cosineSimilarity(a, b [][]float32) float64 {
-	return 1.0
 }

@@ -15,6 +15,25 @@ var providerRegistry = map[string]func() (LLMProvider, error){
 	"ollama":    newOllamaProvider,
 }
 
+func newProvider(cfg *Config) (LLMProvider, error) {
+	ctor, ok := providerRegistry[cfg.Provider]
+	if !ok {
+		return nil, fmt.Errorf("LLM provider %q not supported", cfg.Provider)
+	}
+
+	return ctor()
+}
+
+func NewLLMProviderWithOptions(options ...LLMOption) (LLMProvider, error) {
+	cfg := &Config{}
+
+	for _, option := range options {
+		option(cfg)
+	}
+
+	return newProvider(cfg)
+}
+
 func NewLLMProvider() (LLMProvider, error) {
 	name := viper.GetString("llm.provider")
 
@@ -22,12 +41,9 @@ func NewLLMProvider() (LLMProvider, error) {
 		name = "ollama" // ollama as default
 	}
 
-	ctor, ok := providerRegistry[name]
-	if !ok {
-		return nil, fmt.Errorf("LLM provider %q not supported", name)
-	}
-
-	return ctor()
+	return NewLLMProviderWithOptions(
+		WithProvider(name),
+	)
 }
 
 func newOpenAIProvider() (LLMProvider, error) {

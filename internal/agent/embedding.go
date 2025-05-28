@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/spf13/viper"
 	"github.com/tmc/langchaingo/embeddings"
 )
 
@@ -16,7 +17,16 @@ type embedProvider struct {
 }
 
 func NewEmbeddingProvider() (EmbedProvider, error) {
-	provider, _ := NewLLMProvider()
+	ragProvider := viper.GetString("rag.embed.provider")
+	if ragProvider == "" {
+		ragProvider = viper.GetString("llm.provider")
+	}
+
+	provider, err := NewLLMProviderWithOptions(WithProvider(ragProvider))
+	if err != nil {
+		return nil, err
+	}
+
 	client, ok := provider.Model().(embeddings.EmbedderClient)
 	if !ok {
 		return nil, fmt.Errorf("the client is not supported as embedding provider")

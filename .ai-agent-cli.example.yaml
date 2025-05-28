@@ -27,7 +27,8 @@ rag:
   provider: "local"
 
   # Provedor de embeddings (cai em llm.provider se vazio)
-  embed_provider: "ollama"
+  embed:
+    provider: "ollama"
 
   # Lista de pastas a ignorar ao escanear o repositório
   ignore:
