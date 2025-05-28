@@ -40,7 +40,7 @@ func init() {
 	_ = viper.BindPFlag("log.level", rootCmd.PersistentFlags().Lookup("log-level"))
 	_ = viper.BindPFlag("log.format", rootCmd.PersistentFlags().Lookup("log-format"))
 
-	cobra.OnInitialize(initLogger, initConfig)
+	cobra.OnInitialize(initConfig, initLogger)
 
 	rootCmd.Flags().BoolP("version", "v", false, "exibe a versão")
 
