@@ -15,3 +15,5 @@
 .vscode/
 
 .ai-agent-cli.yaml
+.env*
+!.env.example
