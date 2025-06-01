@@ -34,7 +34,7 @@ var queryCmd = &cobra.Command{
 
 		var ctxBuilder strings.Builder
 		for _, r := range results {
-			ctxBuilder.WriteString(r.Content + "\n---\n")
+			ctxBuilder.WriteString(r.Content() + "\n---\n")
 		}
 
 		prompt := fmt.Sprintf("Contexto:\n%s\n\nPergunta: %s", ctxBuilder.String(), args[0])

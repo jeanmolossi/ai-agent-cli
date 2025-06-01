@@ -3,19 +3,20 @@ package agent
 import (
 	"fmt"
 
+	contractsagent "github.com/jeanmolossi/ai-agent-cli/internal/contracts/agent"
 	"github.com/spf13/viper"
 	"github.com/tmc/langchaingo/llms/anthropic"
 	"github.com/tmc/langchaingo/llms/ollama"
 	"github.com/tmc/langchaingo/llms/openai"
 )
 
-var providerRegistry = map[string]func() (LLMProvider, error){
+var providerRegistry = map[string]func() (contractsagent.LLMProvider, error){
 	"openai":    newOpenAIProvider,
 	"anthropic": newAnthropicProvider,
 	"ollama":    newOllamaProvider,
 }
 
-func newProvider(cfg *Config) (LLMProvider, error) {
+func newProvider(cfg *Config) (contractsagent.LLMProvider, error) {
 	ctor, ok := providerRegistry[cfg.Provider]
 	if !ok {
 		return nil, fmt.Errorf("LLM provider %q not supported", cfg.Provider)
@@ -24,7 +25,7 @@ func newProvider(cfg *Config) (LLMProvider, error) {
 	return ctor()
 }
 
-func NewLLMProviderWithOptions(options ...LLMOption) (LLMProvider, error) {
+func NewLLMProviderWithOptions(options ...LLMOption) (contractsagent.LLMProvider, error) {
 	cfg := &Config{}
 
 	for _, option := range options {
@@ -34,7 +35,7 @@ func NewLLMProviderWithOptions(options ...LLMOption) (LLMProvider, error) {
 	return newProvider(cfg)
 }
 
-func NewLLMProvider() (LLMProvider, error) {
+func NewLLMProvider() (contractsagent.LLMProvider, error) {
 	name := viper.GetString("llm.provider")
 
 	if name == "" {
@@ -46,7 +47,7 @@ func NewLLMProvider() (LLMProvider, error) {
 	)
 }
 
-func newOpenAIProvider() (LLMProvider, error) {
+func newOpenAIProvider() (contractsagent.LLMProvider, error) {
 	key := viper.GetString("llm.openai.api_key")
 	if key == "" {
 		return nil, fmt.Errorf("llm.openai.api_key not found")
@@ -62,7 +63,7 @@ func newOpenAIProvider() (LLMProvider, error) {
 	return &lcProvider{model: client}, nil
 }
 
-func newAnthropicProvider() (LLMProvider, error) {
+func newAnthropicProvider() (contractsagent.LLMProvider, error) {
 	key := viper.GetString("llm.anthropic.api_key")
 	if key == "" {
 		return nil, fmt.Errorf("llm.anthropic.api_key not found")
@@ -78,7 +79,7 @@ func newAnthropicProvider() (LLMProvider, error) {
 	return &lcProvider{model: client}, nil
 }
 
-func newOllamaProvider() (LLMProvider, error) {
+func newOllamaProvider() (contractsagent.LLMProvider, error) {
 	host := viper.GetString("llm.ollama.host")
 	if host == "" {
 		host = "http://localhost"

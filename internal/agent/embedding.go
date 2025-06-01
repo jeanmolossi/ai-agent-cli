@@ -5,19 +5,16 @@ import (
 	"fmt"
 	"log/slog"
 
+	contractsagent "github.com/jeanmolossi/ai-agent-cli/internal/contracts/agent"
 	"github.com/spf13/viper"
 	"github.com/tmc/langchaingo/embeddings"
 )
-
-type EmbedProvider interface {
-	Embed(ctx context.Context, content string) ([][]float32, error)
-}
 
 type embedProvider struct {
 	embedder embeddings.Embedder
 }
 
-func NewEmbeddingProvider() (EmbedProvider, error) {
+func NewEmbeddingProvider() (contractsagent.EmbedProvider, error) {
 	ragProvider := viper.GetString("rag.embed.provider")
 	if ragProvider == "" {
 		ragProvider = viper.GetString("llm.provider")

@@ -5,24 +5,15 @@ import (
 	"fmt"
 	"strings"
 
+	contractsagent "github.com/jeanmolossi/ai-agent-cli/internal/contracts/agent"
 	"github.com/jeanmolossi/ai-agent-cli/internal/prompt"
 	"github.com/spf13/viper"
-	"github.com/tmc/langchaingo/llms"
 )
-
-// LLMProvider is the contract who any LLM should implements
-type LLMProvider interface {
-	// Generate receives a prompt and returns the model response
-	Generate(ctx context.Context, prompt string) (string, error)
-
-	// Model
-	Model() llms.Model
-}
 
 // The Agent represents CLI's core,
 // will be responsible for load LLMs, configure context, etc.
 type Agent struct {
-	llm       LLMProvider
+	llm       contractsagent.LLMProvider
 	templates []string
 }
 

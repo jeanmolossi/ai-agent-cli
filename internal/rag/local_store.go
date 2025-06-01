@@ -11,18 +11,25 @@ import (
 	"sort"
 
 	"github.com/jeanmolossi/ai-agent-cli/internal/agent"
+	contractsagent "github.com/jeanmolossi/ai-agent-cli/internal/contracts/agent"
+	contractsrag "github.com/jeanmolossi/ai-agent-cli/internal/contracts/rag"
 	"github.com/jeanmolossi/ai-agent-cli/pkg/similarity"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 type localStore struct {
 	db       *sql.DB
-	embedder agent.EmbedProvider
+	embedder contractsagent.EmbedProvider
 }
 
-var dataDir = filepath.Join(".", ".ai-agent-cli")
+var (
+	_ contractsrag.VectorStore  = (*localStore)(nil)
+	_ contractsrag.SearchResult = (*searchResult)(nil)
 
-func newLocalStore() (VectorStore, error) {
+	dataDir = filepath.Join(".", ".ai-agent-cli")
+)
+
+func newLocalStore() (contractsrag.VectorStore, error) {
 	err := os.MkdirAll(dataDir, 0o755)
 	if err != nil {
 		return nil, err
@@ -66,7 +73,7 @@ func (l *localStore) Add(id string, content string) error {
 }
 
 // Search implements VectorStore.
-func (l *localStore) Search(query string, topK int) ([]SearchResult, error) {
+func (l *localStore) Search(query string, topK int) ([]contractsrag.SearchResult, error) {
 	qvec, err := l.embedder.Embed(context.Background(), query)
 	if err != nil {
 		return nil, err
@@ -80,7 +87,7 @@ func (l *localStore) Search(query string, topK int) ([]SearchResult, error) {
 	//nolint:errcheck
 	defer rows.Close()
 
-	var results []SearchResult
+	var results []contractsrag.SearchResult
 
 	for rows.Next() {
 		var id, content string
@@ -98,11 +105,11 @@ func (l *localStore) Search(query string, topK int) ([]SearchResult, error) {
 
 		slog.Debug("similarity retrieved", slog.String("id", id), slog.Float64("similarity", score*100))
 
-		results = append(results, SearchResult{id, content, score})
+		results = append(results, &searchResult{id, content, score})
 	}
 
 	sort.Slice(results, func(i, j int) bool {
-		return results[i].Score > results[j].Score
+		return results[i].Score() > results[j].Score()
 	})
 
 	if len(results) > topK {
@@ -138,3 +145,20 @@ func (l *localStore) Persist() error {
 func (l *localStore) Close() error {
 	return l.db.Close()
 }
+
+// search result
+
+type searchResult struct {
+	id      string
+	content string
+	score   float64
+}
+
+// Content implements contractsrag.SearchResult.
+func (s *searchResult) Content() string { return s.content }
+
+// ID implements contractsrag.SearchResult.
+func (s *searchResult) ID() string { return s.id }
+
+// Score implements contractsrag.SearchResult.
+func (s *searchResult) Score() float64 { return s.score }
