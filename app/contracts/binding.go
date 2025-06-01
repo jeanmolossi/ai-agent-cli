@@ -1,5 +1,6 @@
 package contracts
 
 const (
-	BindingConfig = "aiagent.config"
+	BindingConsole = "aiagent.console"
+	BindingConfig  = "aiagent.config"
 )

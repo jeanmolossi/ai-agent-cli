@@ -7,6 +7,7 @@ import (
 
 	"github.com/jeanmolossi/ai-agent-cli/app/contracts"
 	contractsconfig "github.com/jeanmolossi/ai-agent-cli/app/contracts/config"
+	contractsconsole "github.com/jeanmolossi/ai-agent-cli/app/contracts/console"
 	"github.com/jeanmolossi/ai-agent-cli/app/contracts/foundation"
 )
 
@@ -54,6 +55,15 @@ func (r *Container) Instance(key any, inst any) {
 
 func (r *Container) Make(key any) (any, error) {
 	return r.make(key, nil)
+}
+
+func (r *Container) MakeAiGoAgent() contractsconsole.AiGoAgent {
+	instance, err := r.Make(contracts.BindingConsole)
+	if err != nil {
+		return nil
+	}
+
+	return instance.(contractsconsole.AiGoAgent)
 }
 
 func (r *Container) MakeConfig() contractsconfig.Config {

@@ -2,11 +2,15 @@ package foundation
 
 import (
 	"log/slog"
+	"os"
 
 	"github.com/jeanmolossi/ai-agent-cli/app/config"
+	contractsconsole "github.com/jeanmolossi/ai-agent-cli/app/contracts/console"
 	"github.com/jeanmolossi/ai-agent-cli/app/contracts/foundation"
+	"github.com/jeanmolossi/ai-agent-cli/app/foundation/console"
 	"github.com/jeanmolossi/ai-agent-cli/app/foundation/json"
 	"github.com/jeanmolossi/ai-agent-cli/app/support"
+	"github.com/jeanmolossi/ai-agent-cli/app/support/carbon"
 	"github.com/jeanmolossi/ai-agent-cli/app/support/env"
 )
 
@@ -43,9 +47,10 @@ func (a *Application) Boot() {
 	a.setTimezone()
 	a.registerConfiguredServiceProviders()
 	a.bootConfiguredServiceProviders()
-	// a.registerCommands([]contractsconsole.Command{
-	// 	console.NewAboutCommand(a),
-	// })
+	a.registerCommands([]contractsconsole.Command{
+		console.NewAboutCommand(a),
+	})
+	a.bootAiGoAgent()
 }
 
 func (a *Application) SetJson(j foundation.Json) {
@@ -56,6 +61,20 @@ func (a *Application) SetJson(j foundation.Json) {
 
 func (a *Application) GetJson() foundation.Json {
 	return a.json
+}
+
+func (a *Application) Version() string {
+	return support.Version
+}
+
+func (a *Application) bootAiGoAgent() {
+	aigoagentFacade := a.MakeAiGoAgent()
+	if aigoagentFacade == nil {
+		slog.Warn("AiGoAgent Facade is not initialized. Skipping command execution")
+		return
+	}
+
+	_ = aigoagentFacade.Run(os.Args, true)
 }
 
 func (a *Application) getBaseServiceProviders() []foundation.ServiceProvider {
@@ -108,12 +127,25 @@ func (a *Application) bootBaseServiceProviders() {
 	a.bootServiceProviders(a.getBaseServiceProviders())
 }
 
+func (a *Application) registerCommands(commands []contractsconsole.Command) {
+	aigoagent := a.MakeAiGoAgent()
+	if aigoagent == nil {
+		slog.Warn("AiGoAgent Facade is not initialized. Skipping command registration.")
+		return
+	}
+
+	aigoagent.Register(commands)
+}
+
 func (a *Application) setTimezone() {
 	configFacade := a.MakeConfig()
 	if configFacade == nil {
 		slog.Warn("config facade is not initialized. Using default timezone UTC.")
+		carbon.SetTimezone(carbon.UTC)
 		return
 	}
+
+	carbon.SetTimezone(configFacade.GetString("app.timezone", carbon.UTC))
 }
 
 func setEnv() {}

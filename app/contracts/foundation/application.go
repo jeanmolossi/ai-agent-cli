@@ -1,10 +1,20 @@
 package foundation
 
-import "github.com/jeanmolossi/ai-agent-cli/app/contracts/config"
+import (
+	"github.com/jeanmolossi/ai-agent-cli/app/contracts/config"
+	"github.com/jeanmolossi/ai-agent-cli/app/contracts/console"
+)
+
+type AboutItem struct {
+	Key   string
+	Value string
+}
 
 type Application interface {
 	// Boot register and bootstrap configured service providers.
 	Boot()
+	// Version gets the version number of the application.
+	Version() string
 
 	// Path
 	SetJson(j Json)
@@ -23,6 +33,8 @@ type Application interface {
 	Instance(key, instance any)
 	// MakeConfig resolves the config instance.
 	MakeConfig() config.Config
+	// MakeAiGoAgent resolves the goagent console instance.
+	MakeAiGoAgent() console.AiGoAgent
 	// Make resolves the given type from the container.
 	Make(key any) (any, error)
 	// MakeWith resolves the given type with the given parameters from the container.
