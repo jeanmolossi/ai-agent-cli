@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/dromara/carbon/v2"
+	"github.com/jeanmolossi/ai-agent-cli/app/console"
 	"github.com/jeanmolossi/ai-agent-cli/app/contracts/foundation"
 	"github.com/jeanmolossi/ai-agent-cli/app/facades"
 )
@@ -63,6 +64,8 @@ func init() {
 		// The service providers listed here will be automatically loaded on the
 		// request to your application. Feel free to add your own services to
 		// this array to grant expanded functionality to your applications.
-		"providers": []foundation.ServiceProvider{},
+		"providers": []foundation.ServiceProvider{
+			&console.ServiceProvider{},
+		},
 	})
 }
