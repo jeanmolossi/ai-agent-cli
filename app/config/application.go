@@ -7,7 +7,9 @@ import (
 
 	"github.com/jeanmolossi/ai-agent-cli/app/contracts/config"
 	"github.com/jeanmolossi/ai-agent-cli/app/support"
+	"github.com/jeanmolossi/ai-agent-cli/app/support/convert"
 	"github.com/jeanmolossi/ai-agent-cli/app/support/file"
+	"github.com/spf13/cast"
 	"github.com/spf13/viper"
 )
 
@@ -27,7 +29,7 @@ func NewApplication(envFilePath string) *Application {
 		app.vip.SetConfigFile(envFilePath)
 
 		if err := app.vip.ReadInConfig(); err != nil {
-			slog.Error("invalid config error: %v", err)
+			slog.Error("invalid config error", slog.String("err", err.Error()))
 			os.Exit(0)
 		}
 	}
@@ -44,6 +46,7 @@ func NewApplication(envFilePath string) *Application {
 
 		if len(appKey.(string)) != 32 {
 			slog.Error("Invalid APP_KEY, the length must be 32, please reset it.")
+			slog.Warn("Example command: \n./aigoagent key:generate")
 			os.Exit(0)
 		}
 	}
@@ -51,37 +54,61 @@ func NewApplication(envFilePath string) *Application {
 	return app
 }
 
-// Add implements config.Config.
-func (a *Application) Add(name string, configuration any) {
-	panic("unimplemented")
+// Env implements config.Config.
+func (app *Application) Env(envName string, defaultValue ...any) any {
+	value := app.Get(envName, defaultValue...)
+	if cast.ToString(value) == "" {
+		return convert.Default(defaultValue...)
+	}
+
+	return value
 }
 
-// Env implements config.Config.
-func (a *Application) Env(envName string, defaultValue ...any) any {
-	panic("unimplemented")
+// Add implements config.Config.
+func (app *Application) Add(name string, configuration any) {
+	app.vip.Set(name, configuration)
 }
 
 // Get implements config.Config.
-func (a *Application) Get(path string, defaultValue ...any) any {
-	panic("unimplemented")
+func (app *Application) Get(path string, defaultValue ...any) any {
+	if !app.vip.IsSet(path) {
+		return convert.Default(defaultValue...)
+	}
+
+	return app.vip.Get(path)
 }
 
 // GetBool implements config.Config.
-func (a *Application) GetBool(path string, defaultValue ...bool) bool {
-	panic("unimplemented")
+func (app *Application) GetBool(path string, defaultValue ...bool) bool {
+	if !app.vip.IsSet(path) {
+		return convert.Default(defaultValue...)
+	}
+
+	return app.vip.GetBool(path)
 }
 
 // GetDuration implements config.Config.
-func (a *Application) GetDuration(path string, defaultValue ...time.Duration) time.Duration {
-	panic("unimplemented")
+func (app *Application) GetDuration(path string, defaultValue ...time.Duration) time.Duration {
+	if !app.vip.IsSet(path) {
+		return convert.Default(defaultValue...)
+	}
+
+	return app.vip.GetDuration(path)
 }
 
 // GetInt implements config.Config.
-func (a *Application) GetInt(path string, defaultValue ...int) int {
-	panic("unimplemented")
+func (app *Application) GetInt(path string, defaultValue ...int) int {
+	if !app.vip.IsSet(path) {
+		return convert.Default(defaultValue...)
+	}
+
+	return app.vip.GetInt(path)
 }
 
 // GetString implements config.Config.
-func (a *Application) GetString(path string, defaultValue ...string) string {
-	panic("unimplemented")
+func (app *Application) GetString(path string, defaultValue ...string) string {
+	if !app.vip.IsSet(path) {
+		return convert.Default(defaultValue...)
+	}
+	return app.vip.GetString(path)
 }

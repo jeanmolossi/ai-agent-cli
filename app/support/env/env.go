@@ -28,6 +28,16 @@ func IsDirectlyRun() bool {
 			strings.Contains(filepath.ToSlash(executable), "/T/go-build")) // macOS
 }
 
+func IsNoANSI() bool {
+	for _, arg := range os.Args {
+		if arg == "--no-ansi" {
+			return true
+		}
+	}
+
+	return false
+}
+
 func IsTesting() bool {
 	for _, arg := range os.Args {
 		if strings.Contains(arg, "-test.") {

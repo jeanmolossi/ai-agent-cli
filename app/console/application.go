@@ -2,9 +2,13 @@ package console
 
 import (
 	"context"
+	"os"
+	"slices"
+	"strings"
 
 	"github.com/jeanmolossi/ai-agent-cli/app/contracts/console"
 	"github.com/jeanmolossi/ai-agent-cli/app/contracts/console/command"
+	"github.com/jeanmolossi/ai-agent-cli/app/support/env"
 	"github.com/urfave/cli/v3"
 )
 
@@ -62,17 +66,73 @@ func (a *Application) Register(commands []console.Command) {
 
 // Call implements console.AiGoAgent.
 func (a *Application) Call(command string) error {
-	panic("unimplemented")
+	if len(os.Args) == 0 {
+		return nil
+	}
+
+	commands := []string{os.Args[0]}
+
+	if a.useAiGoAgent {
+		commands = append(commands, "aigoagent")
+	}
+
+	return a.Run(append(commands, strings.Split(command, " ")...), false)
 }
 
 // CallAndExit implements console.AiGoAgent.
 func (a *Application) CallAndExit(command string) {
-	panic("unimplemented")
+	if len(os.Args) == 0 {
+		return
+	}
+
+	commands := []string{os.Args[0]}
+
+	if a.useAiGoAgent {
+		commands = append(commands, "aigoagent")
+	}
+
+	_ = a.Run(append(commands, strings.Split(command, " ")...), true)
 }
 
 // Run implements console.AiGoAgent.
 func (a *Application) Run(args []string, exitIfGoAgent bool) error {
-	panic("unimplemented")
+	//nolint:staticcheck // branch is empty but it WIP
+	if noANSI || env.IsNoANSI() || slices.Contains(args, "--no-ansi") {
+		// TODO: color disable
+	}
+
+	aigoagentIndex := -1
+	if a.useAiGoAgent {
+		for i, arg := range args {
+			if arg == "aigoagent" {
+				aigoagentIndex = i
+				break
+			}
+		}
+	} else {
+		aigoagentIndex = 0
+	}
+
+	if aigoagentIndex != -1 {
+		if aigoagentIndex+1 == len(args) {
+			args = append(args, "--help")
+		}
+
+		cliArgs := append([]string{args[0]}, args[aigoagentIndex+1:]...)
+		if err := a.instance.Run(context.Background(), cliArgs); err != nil {
+			if exitIfGoAgent {
+				panic(err.Error())
+			}
+
+			return err
+		}
+
+		if exitIfGoAgent {
+			os.Exit(0)
+		}
+	}
+
+	return nil
 }
 
 func flagsToCliFlags(flags []command.Flag) []cli.Flag {

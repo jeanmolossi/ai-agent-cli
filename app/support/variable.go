@@ -9,5 +9,5 @@ var (
 	EnvFileEncryptCipher = "AES-256-CBC"
 
 	DontVerifyEnvFileExists    = false
-	DontVerifyEnvFileWhiteList = []string{"key:generage", "env:decrypt"}
+	DontVerifyEnvFileWhiteList = []string{"key:generate", "env:decrypt"}
 )
