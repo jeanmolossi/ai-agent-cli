@@ -6,7 +6,7 @@ require (
 	github.com/charmbracelet/bubbles v0.21.0
 	github.com/charmbracelet/bubbletea v1.3.5
 	github.com/charmbracelet/huh v0.7.0
-	github.com/charmbracelet/huh/spinner v0.0.0-20250519092748-d6f1597485e0
+	github.com/charmbracelet/huh/spinner fe12c0e929d3
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/dromara/carbon/v2 v2.6.7
 	github.com/mattn/go-sqlite3 v1.14.28
