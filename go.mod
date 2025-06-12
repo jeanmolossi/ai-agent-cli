@@ -8,7 +8,7 @@ require (
 	github.com/charmbracelet/huh v0.7.0
 	github.com/charmbracelet/huh/spinner fe12c0e929d3
 	github.com/charmbracelet/lipgloss v1.1.0
-	github.com/dromara/carbon/v2 v2.6.7
+	github.com/dromara/carbon/v2 v2.6.8
 	github.com/mattn/go-sqlite3 v1.14.28
 	github.com/pterm/pterm v0.12.81
 	github.com/spf13/cast v1.9.2
