@@ -21,7 +21,7 @@ require (
 	github.com/tree-sitter/tree-sitter-javascript v0.23.1
 	github.com/tree-sitter/tree-sitter-python v0.23.6
 	github.com/urfave/cli/v3 v3.3.3
-	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1
+	github.com/xrash/smetrics 55b8f293f342
 	gopkg.in/yaml.v3 v3.0.1
 )
 
